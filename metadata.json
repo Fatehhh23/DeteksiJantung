@@ -1,0 +1,5 @@
+{
+  "name": "VitalSense - MAX30100 Dashboard",
+  "description": "Dashboard monitoring kesehatan real-time untuk sensor detak jantung dan oksigen (MAX30100) berbasis ESP32/ESP8266 dengan analisis AI.",
+  "requestFramePermissions": []
+}
