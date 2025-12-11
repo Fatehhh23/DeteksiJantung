@@ -2,9 +2,11 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   Activity, Wifi, WifiOff, Zap, Brain, PlayCircle, PauseCircle, 
   Settings, LayoutDashboard, BookOpen, Heart, Droplet, Lock, 
-  TrendingUp, AlertCircle, Info, CheckCircle, RotateCcw
+  TrendingUp, AlertCircle, Info, CheckCircle, RotateCcw, Apple, ShoppingCart
 } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import HealthRecommendations from './components/HealthRecommendations';
+import ProductsPage from './components/ProductsPage';
 
 // ============= TYPES & CONSTANTS =============
 enum ConnectionStatus {
@@ -246,7 +248,7 @@ const analyzeVitals = async (data: VitalData[]): Promise<AnalysisResult> => {
 
 // ============= MAIN APP =============
 export default function App() {
-  const [view, setView] = useState<'dashboard' | 'guide'>('dashboard');
+  const [view, setView] = useState<'dashboard' | 'guide' | 'recommendations' | 'products'>('dashboard');
   const [status, setStatus] = useState<ConnectionStatus>(ConnectionStatus.DISCONNECTED);
   const [data, setData] = useState<VitalData[]>([]);
   const [currentBpm, setCurrentBpm] = useState(0);
@@ -458,6 +460,22 @@ export default function App() {
             >
               <BookOpen size={16} /> Panduan
             </button>
+            <button
+              onClick={() => setView('recommendations')}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
+                view === 'recommendations' ? 'bg-slate-700 text-white shadow' : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <Apple size={16} /> Rekomendasi
+            </button>
+            <button
+              onClick={() => setView('products')}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
+                view === 'products' ? 'bg-slate-700 text-white shadow' : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <ShoppingCart size={16} /> Produk
+            </button>
           </div>
 
           <div
@@ -614,8 +632,12 @@ export default function App() {
               </div>
             </div>
           </div>
-        ) : (
+        ) : view === 'guide' ? (
           <HealthGuide />
+        ) : view === 'recommendations' ? (
+          <HealthRecommendations />
+        ) : (
+          <ProductsPage />
         )}
       </main>
     </div>
