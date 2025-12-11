@@ -1,13 +1,11 @@
 import React from 'react';
-import { ShoppingCart, Star, Zap, Wifi, Battery, Shield, TrendingUp } from 'lucide-react';
+import { ShoppingCart, Wifi, Battery, Shield, Zap, CheckCircle } from 'lucide-react';
 
 interface Product {
   id: number;
   name: string;
   description: string;
   price: string;
-  rating: number;
-  reviews: number;
   features: string[];
   image: string;
   badge?: string;
@@ -17,10 +15,8 @@ const products: Product[] = [
   {
     id: 1,
     name: 'VitalRing Pro',
-    description: 'Cincin pintar untuk monitoring detak jantung dan SpO2 24/7 dengan desain premium',
+    description: 'Cincin pintar untuk monitoring detak jantung dan SpO2 24/7 dengan desain premium berbasis sensor MAX30102',
     price: 'Rp 2.499.000',
-    rating: 4.8,
-    reviews: 124,
     badge: 'Best Seller',
     features: [
       'Monitoring BPM & SpO2 real-time',
@@ -29,15 +25,13 @@ const products: Product[] = [
       'Sinkronisasi otomatis ke smartphone',
       'Material titanium premium'
     ],
-    image: '💍'
+    image: '/images/ring.jpg'
   },
   {
     id: 2,
     name: 'HeartBand Elite',
-    description: 'Gelang kesehatan dengan sensor MAX30102 untuk tracking jantung akurat sepanjang hari',
+    description: 'Gelang kesehatan dengan sensor MAX30102 untuk tracking jantung akurat sepanjang hari dengan display OLED',
     price: 'Rp 1.799.000',
-    rating: 4.7,
-    reviews: 89,
     badge: 'Popular',
     features: [
       'Sensor MAX30102 presisi tinggi',
@@ -46,15 +40,13 @@ const products: Product[] = [
       'Tracking tidur & aktivitas',
       'Baterai 5 hari pemakaian'
     ],
-    image: '⌚'
+    image: '/images/band.jpg'
   },
   {
     id: 3,
     name: 'PulseWatch X1',
-    description: 'Smartwatch medis dengan sertifikasi untuk monitoring kesehatan profesional',
+    description: 'Smartwatch medis dengan sertifikasi untuk monitoring kesehatan profesional menggunakan teknologi PPG advanced',
     price: 'Rp 3.299.000',
-    rating: 4.9,
-    reviews: 156,
     badge: 'Premium',
     features: [
       'Sertifikasi medis FDA',
@@ -63,15 +55,13 @@ const products: Product[] = [
       'Deteksi aritmia otomatis',
       'Layar AMOLED 1.4"'
     ],
-    image: '⌚'
+    image: '/images/watch.jpg'
   },
   {
     id: 4,
     name: 'HealthClip Mini',
-    description: 'Klip jari portable untuk pengukuran cepat BPM dan SpO2, cocok untuk traveling',
+    description: 'Klip jari portable untuk pengukuran cepat BPM dan SpO2, cocok untuk traveling dengan hasil instant',
     price: 'Rp 899.000',
-    rating: 4.5,
-    reviews: 67,
     features: [
       'Ukuran compact & portable',
       'Hasil instant dalam 10 detik',
@@ -79,15 +69,13 @@ const products: Product[] = [
       'Baterai AAA (200+ pengukuran)',
       'Auto shut-off'
     ],
-    image: '🔬'
+    image: '/images/armband.jpg'
   },
   {
     id: 5,
     name: 'VitalPatch Sensor',
-    description: 'Sensor patch adhesif untuk monitoring continuous selama 24-48 jam',
+    description: 'Sensor patch adhesif untuk monitoring continuous selama 24-48 jam dengan koneksi wireless',
     price: 'Rp 1.299.000',
-    rating: 4.6,
-    reviews: 43,
     features: [
       'Monitoring continuous 48 jam',
       'Ultra tipis & nyaman',
@@ -95,15 +83,13 @@ const products: Product[] = [
       'Medical grade adhesive',
       'Compatible dengan smartphone'
     ],
-    image: '📱'
+    image: '/images/armband.jpg'
   },
   {
     id: 6,
     name: 'HeartGuard Kit',
-    description: 'Paket lengkap monitoring jantung untuk keluarga, termasuk sensor dan hub',
+    description: 'Paket lengkap monitoring jantung untuk keluarga, termasuk sensor wearable dan hub WiFi dengan cloud storage',
     price: 'Rp 4.999.000',
-    rating: 4.8,
-    reviews: 91,
     badge: 'Family Pack',
     features: [
       'Hub WiFi untuk 5 pengguna',
@@ -112,72 +98,61 @@ const products: Product[] = [
       'Konsultasi dokter online 3 bulan',
       'Dashboard keluarga'
     ],
-    image: '📦'
+    image: '/images/band.jpg'
   }
 ];
 
 const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
   return (
-    <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-6 hover:border-blue-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-blue-900/20 flex flex-col h-full">
-      {/* Badge */}
-      {product.badge && (
-        <div className="mb-3">
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-500/20 border border-blue-500/30 rounded-full text-xs font-semibold text-blue-400">
-            <Zap className="w-3 h-3" />
-            {product.badge}
-          </span>
-        </div>
-      )}
-
+    <div className="bg-slate-800/50 border border-slate-700 rounded-2xl overflow-hidden hover:border-blue-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-blue-900/20 flex flex-col h-full">
       {/* Product Image */}
-      <div className="text-6xl mb-4 text-center">
-        {product.image}
+      <div className="relative h-64 bg-slate-900/50 overflow-hidden">
+        <img 
+          src={product.image} 
+          alt={product.name}
+          className="w-full h-full object-cover"
+          onError={(e) => {
+            // Fallback jika gambar tidak ditemukan
+            e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300"%3E%3Crect fill="%23334155" width="400" height="300"/%3E%3Ctext fill="%2394a3b8" font-family="sans-serif" font-size="24" x="50%25" y="50%25" text-anchor="middle" dy=".3em"%3E' + product.name + '%3C/text%3E%3C/svg%3E';
+          }}
+        />
+        {/* Badge */}
+        {product.badge && (
+          <div className="absolute top-3 left-3">
+            <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-600/90 backdrop-blur-sm border border-blue-400/30 rounded-full text-xs font-semibold text-white shadow-lg">
+              <Zap className="w-3.5 h-3.5" />
+              {product.badge}
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Product Info */}
-      <h3 className="text-xl font-bold text-slate-100 mb-2">{product.name}</h3>
-      <p className="text-sm text-slate-400 mb-4 flex-grow">{product.description}</p>
+      <div className="p-6 flex flex-col flex-grow">
+        <h3 className="text-xl font-bold text-slate-100 mb-2">{product.name}</h3>
+        <p className="text-sm text-slate-400 mb-4 flex-grow">{product.description}</p>
 
-      {/* Rating */}
-      <div className="flex items-center gap-2 mb-4">
-        <div className="flex items-center gap-1">
-          {[...Array(5)].map((_, i) => (
-            <Star
-              key={i}
-              className={`w-4 h-4 ${
-                i < Math.floor(product.rating)
-                  ? 'fill-yellow-400 text-yellow-400'
-                  : 'text-slate-600'
-              }`}
-            />
+        {/* Features */}
+        <div className="mb-5 space-y-2">
+          {product.features.map((feature, idx) => (
+            <div key={idx} className="flex items-start gap-2 text-xs text-slate-400">
+              <CheckCircle className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0 mt-0.5" />
+              <span>{feature}</span>
+            </div>
           ))}
         </div>
-        <span className="text-sm text-slate-400">({product.reviews} reviews)</span>
-      </div>
 
-      {/* Features */}
-      <div className="mb-4 space-y-2">
-        {product.features.map((feature, idx) => (
-          <div key={idx} className="flex items-start gap-2 text-xs text-slate-400">
-            <Shield className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0 mt-0.5" />
-            <span>{feature}</span>
+        {/* Price & CTA */}
+        <div className="mt-auto pt-4 border-t border-slate-700">
+          <div className="mb-3">
+            <p className="text-xs text-slate-500 mb-1">Harga</p>
+            <p className="text-3xl font-bold text-blue-400">{product.price}</p>
           </div>
-        ))}
-      </div>
-
-      {/* Price & CTA */}
-      <div className="mt-auto pt-4 border-t border-slate-700">
-        <div className="flex items-center justify-between mb-3">
-          <div>
-            <p className="text-xs text-slate-500 mb-0.5">Harga</p>
-            <p className="text-2xl font-bold text-blue-400">{product.price}</p>
-          </div>
-          <TrendingUp className="w-5 h-5 text-emerald-400" />
+          <button className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors">
+            <ShoppingCart className="w-4 h-4" />
+            Beli Sekarang
+          </button>
         </div>
-        <button className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors">
-          <ShoppingCart className="w-4 h-4" />
-          Beli Sekarang
-        </button>
       </div>
     </div>
   );
@@ -235,7 +210,7 @@ const ProductsPage: React.FC = () => {
           </div>
           <div className="flex items-start gap-3">
             <div className="w-10 h-10 bg-emerald-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
-              <Star className="w-5 h-5 text-emerald-400" />
+              <CheckCircle className="w-5 h-5 text-emerald-400" />
             </div>
             <div>
               <p className="font-medium text-slate-200 mb-1">Kualitas Medis</p>
