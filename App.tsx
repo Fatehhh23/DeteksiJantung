@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   Activity, Wifi, WifiOff, Zap, Brain, PlayCircle, PauseCircle, 
   Settings, LayoutDashboard, BookOpen, Heart, Droplet, Lock, 
-  TrendingUp, AlertCircle, Info, CheckCircle, RotateCcw, Apple, ShoppingCart
+  TrendingUp, AlertCircle, Info, CheckCircle, RotateCcw, Apple, ShoppingCart, Moon, Sun
 } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import HealthRecommendations from './components/HealthRecommendations';
@@ -29,9 +29,26 @@ interface AnalysisResult {
 
 const MAX_DATA_POINTS = 50;
 const ESP_BASE_URL = 'http://10.224.86.192';
-const STABILITY_WINDOW = 5; // Dikurangi dari 10 menjadi 5 untuk lebih cepat
-const STABILITY_THRESHOLD = 8; // Ditingkatkan dari 5 menjadi 8 untuk lebih toleran
-const NO_FINGER_THRESHOLD = 10; // Batas untuk deteksi jari tidak ada
+const STABILITY_WINDOW = 5;
+const STABILITY_THRESHOLD = 8;
+const NO_FINGER_THRESHOLD = 10;
+
+// ============= THEME HOOK =============
+function useTheme() {
+  const [isDark, setIsDark] = useState(() => {
+    const saved = localStorage.getItem('theme');
+    return saved ? saved === 'dark' : true;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    document.documentElement.classList.toggle('dark', isDark);
+  }, [isDark]);
+
+  const toggleTheme = () => setIsDark(!isDark);
+
+  return { isDark, toggleTheme };
+}
 
 // ============= COMPONENTS =============
 const MetricCard: React.FC<{
@@ -60,13 +77,13 @@ const MetricCard: React.FC<{
 
   return (
     <div className={`bg-gradient-to-br ${bgGlow} rounded-2xl p-1 border transition-all duration-300`}>
-      <div className="bg-slate-900/80 backdrop-blur-sm rounded-xl p-6">
+      <div className="bg-white/90 dark:bg-slate-900/80 backdrop-blur-sm rounded-xl p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className={`p-3 rounded-lg ${iconBg}`}>
               <Icon className={`w-6 h-6 ${iconColor}`} />
             </div>
-            <h3 className="text-slate-300 font-medium">{title}</h3>
+            <h3 className="text-slate-700 dark:text-slate-300 font-medium">{title}</h3>
           </div>
           {isLocked ? (
             <div className="flex items-center gap-2">
@@ -76,10 +93,10 @@ const MetricCard: React.FC<{
               </div>
               <button
                 onClick={onUnlock}
-                className="p-1.5 bg-slate-700 hover:bg-slate-600 rounded-lg transition-colors"
+                className="p-1.5 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 rounded-lg transition-colors"
                 title="Unlock untuk deteksi ulang"
               >
-                <RotateCcw className="w-3.5 h-3.5 text-slate-400" />
+                <RotateCcw className="w-3.5 h-3.5 text-slate-600 dark:text-slate-400" />
               </button>
             </div>
           ) : (
@@ -94,11 +111,11 @@ const MetricCard: React.FC<{
           <span className={`text-5xl font-bold ${getStatusColor()} transition-colors duration-300`}>
             {value}
           </span>
-          <span className="text-2xl text-slate-500 font-medium">{unit}</span>
+          <span className="text-2xl text-slate-400 dark:text-slate-500 font-medium">{unit}</span>
         </div>
 
         {isLocked && (
-          <p className="mt-3 text-xs text-slate-500">
+          <p className="mt-3 text-xs text-slate-500 dark:text-slate-500">
             Nilai rata-rata stabil dari {STABILITY_WINDOW} pembacaan (~{STABILITY_WINDOW} detik)
           </p>
         )}
@@ -113,8 +130,8 @@ const LiveChart: React.FC<{
   color: string;
   title: string;
 }> = ({ data, dataKey, color, title }) => (
-  <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-6">
-    <h3 className="text-lg font-semibold text-slate-200 mb-4">{title}</h3>
+  <div className="bg-white/90 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl p-6">
+    <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-4">{title}</h3>
     <ResponsiveContainer width="100%" height={250}>
       <LineChart data={data}>
         <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
@@ -129,39 +146,39 @@ const LiveChart: React.FC<{
 
 const HealthGuide: React.FC = () => (
   <div className="space-y-6">
-    <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-8">
+    <div className="bg-white/90 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl p-8">
       <div className="flex items-center gap-3 mb-6">
         <div className="bg-blue-600 p-2 rounded-lg">
           <BookOpen className="w-6 h-6 text-white" />
         </div>
-        <h2 className="text-2xl font-bold text-slate-100">Panduan Kesehatan</h2>
+        <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Panduan Kesehatan</h2>
       </div>
 
       <div className="mb-8">
         <div className="flex items-center gap-2 mb-4">
           <Heart className="w-5 h-5 text-rose-400" />
-          <h3 className="text-xl font-semibold text-slate-200">Detak Jantung (BPM)</h3>
+          <h3 className="text-xl font-semibold text-slate-800 dark:text-slate-200">Detak Jantung (BPM)</h3>
         </div>
         <div className="space-y-3 pl-7">
           <div className="flex items-start gap-3 p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-lg">
             <CheckCircle className="w-5 h-5 text-emerald-400 mt-0.5 flex-shrink-0" />
             <div>
               <p className="font-medium text-emerald-400">Normal: 60-100 BPM</p>
-              <p className="text-sm text-slate-400 mt-1">Detak jantung sehat untuk orang dewasa saat istirahat.</p>
+              <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">Detak jantung sehat untuk orang dewasa saat istirahat.</p>
             </div>
           </div>
           <div className="flex items-start gap-3 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
             <AlertCircle className="w-5 h-5 text-yellow-400 mt-0.5 flex-shrink-0" />
             <div>
               <p className="font-medium text-yellow-400">Perhatian: 100-120 BPM atau 50-60 BPM</p>
-              <p className="text-sm text-slate-400 mt-1">Pantau terus dan konsultasi jika berlanjut.</p>
+              <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">Pantau terus dan konsultasi jika berlanjut.</p>
             </div>
           </div>
           <div className="flex items-start gap-3 p-3 bg-rose-500/10 border border-rose-500/20 rounded-lg">
             <AlertCircle className="w-5 h-5 text-rose-400 mt-0.5 flex-shrink-0" />
             <div>
               <p className="font-medium text-rose-400">Bahaya: &gt;120 BPM atau &lt;50 BPM</p>
-              <p className="text-sm text-slate-400 mt-1">Segera konsultasi dengan tenaga medis.</p>
+              <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">Segera konsultasi dengan tenaga medis.</p>
             </div>
           </div>
         </div>
@@ -170,28 +187,28 @@ const HealthGuide: React.FC = () => (
       <div>
         <div className="flex items-center gap-2 mb-4">
           <Droplet className="w-5 h-5 text-sky-400" />
-          <h3 className="text-xl font-semibold text-slate-200">Saturasi Oksigen (SpO2)</h3>
+          <h3 className="text-xl font-semibold text-slate-800 dark:text-slate-200">Saturasi Oksigen (SpO2)</h3>
         </div>
         <div className="space-y-3 pl-7">
           <div className="flex items-start gap-3 p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-lg">
             <CheckCircle className="w-5 h-5 text-emerald-400 mt-0.5 flex-shrink-0" />
             <div>
               <p className="font-medium text-emerald-400">Normal: ≥95%</p>
-              <p className="text-sm text-slate-400 mt-1">Saturasi oksigen optimal dalam darah.</p>
+              <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">Saturasi oksigen optimal dalam darah.</p>
             </div>
           </div>
           <div className="flex items-start gap-3 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
             <AlertCircle className="w-5 h-5 text-yellow-400 mt-0.5 flex-shrink-0" />
             <div>
               <p className="font-medium text-yellow-400">Perhatian: 90-94%</p>
-              <p className="text-sm text-slate-400 mt-1">Hipoksemia ringan. Perlu pemantauan.</p>
+              <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">Hipoksemia ringan. Perlu pemantauan.</p>
             </div>
           </div>
           <div className="flex items-start gap-3 p-3 bg-rose-500/10 border border-rose-500/20 rounded-lg">
             <AlertCircle className="w-5 h-5 text-rose-400 mt-0.5 flex-shrink-0" />
             <div>
               <p className="font-medium text-rose-400">Bahaya: &lt;90%</p>
-              <p className="text-sm text-slate-400 mt-1">Segera cari bantuan medis.</p>
+              <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">Segera cari bantuan medis.</p>
             </div>
           </div>
         </div>
@@ -202,7 +219,7 @@ const HealthGuide: React.FC = () => (
           <Info className="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" />
           <div>
             <p className="font-medium text-blue-400 mb-1">Catatan Penting</p>
-            <p className="text-sm text-slate-400">
+            <p className="text-sm text-slate-600 dark:text-slate-400">
               Panduan ini bersifat umum. Selalu konsultasikan hasil dengan tenaga kesehatan profesional.
             </p>
           </div>
@@ -215,7 +232,6 @@ const HealthGuide: React.FC = () => (
 const analyzeVitals = async (data: VitalData[]): Promise<AnalysisResult> => {
   await new Promise(resolve => setTimeout(resolve, 1500));
   
-  // Ambil data terakhir (yang merupakan nilai locked)
   const lastData = data[data.length - 1];
   const avgBpm = lastData.bpm;
   const avgSpo2 = lastData.spo2;
@@ -248,6 +264,7 @@ const analyzeVitals = async (data: VitalData[]): Promise<AnalysisResult> => {
 
 // ============= MAIN APP =============
 export default function App() {
+  const { isDark, toggleTheme } = useTheme();
   const [view, setView] = useState<'dashboard' | 'guide' | 'recommendations' | 'products'>('dashboard');
   const [status, setStatus] = useState<ConnectionStatus>(ConnectionStatus.DISCONNECTED);
   const [data, setData] = useState<VitalData[]>([]);
@@ -262,7 +279,6 @@ export default function App() {
   const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
   const intervalRef = useRef<number | null>(null);
 
-  // Fungsi untuk unlock manual
   const unlockBpm = () => {
     setIsBpmLocked(false);
     setLockedBpm(null);
@@ -273,18 +289,14 @@ export default function App() {
     setLockedSpo2(null);
   };
 
-  // Check stability - dipisahkan dari useCallback
   const checkStability = useCallback((data: VitalData[]) => {
     if (data.length < STABILITY_WINDOW) return;
     
     const recentData = data.slice(-STABILITY_WINDOW);
-    
-    // Deteksi jari tidak ada - jika BPM atau SpO2 terlalu rendah
     const lastBpm = recentData[recentData.length - 1].bpm;
     const lastSpo2 = recentData[recentData.length - 1].spo2;
     
     if (lastBpm < NO_FINGER_THRESHOLD || lastSpo2 < NO_FINGER_THRESHOLD) {
-      // Auto-unlock jika jari tidak terdeteksi
       if (isBpmLocked || isSpo2Locked) {
         setIsBpmLocked(false);
         setIsSpo2Locked(false);
@@ -294,7 +306,6 @@ export default function App() {
       return;
     }
     
-    // Check BPM stability - hanya jika belum locked DAN nilai valid
     if (!isBpmLocked) {
       const bpmValues = recentData.map(d => d.bpm).filter(v => v >= NO_FINGER_THRESHOLD);
       
@@ -304,16 +315,13 @@ export default function App() {
         const minBpm = Math.min(...bpmValues);
         const variance = maxBpm - minBpm;
         
-        // Lock jika variasi dalam threshold DAN nilai masuk akal (30-200 BPM)
         if (variance <= STABILITY_THRESHOLD && avgBpm >= 30 && avgBpm <= 200) {
           setLockedBpm(avgBpm);
           setIsBpmLocked(true);
-          console.log(`BPM Locked: ${avgBpm} (variance: ${variance})`);
         }
       }
     }
     
-    // Check SpO2 stability - hanya jika belum locked DAN nilai valid
     if (!isSpo2Locked) {
       const spo2Values = recentData.map(d => d.spo2).filter(v => v >= NO_FINGER_THRESHOLD);
       
@@ -323,11 +331,9 @@ export default function App() {
         const minSpo2 = Math.min(...spo2Values);
         const variance = maxSpo2 - minSpo2;
         
-        // Lock jika variasi dalam threshold DAN nilai masuk akal (70-100%)
         if (variance <= STABILITY_THRESHOLD && avgSpo2 >= 70 && avgSpo2 <= 100) {
           setLockedSpo2(avgSpo2);
           setIsSpo2Locked(true);
-          console.log(`SpO2 Locked: ${avgSpo2}% (variance: ${variance})`);
         }
       }
     }
@@ -388,7 +394,6 @@ export default function App() {
     setIsSpo2Locked(false);
   }, []);
 
-  // Effect untuk check stability setiap kali data berubah
   useEffect(() => {
     if (data.length >= STABILITY_WINDOW && isRunning) {
       checkStability(data);
@@ -402,7 +407,6 @@ export default function App() {
   }, []);
 
   const handleAnalyze = async () => {
-    // Gunakan nilai locked jika ada, jika tidak ada maka tidak bisa analisis
     if (!isBpmLocked || !isSpo2Locked) {
       alert('Tunggu hingga kedua nilai (BPM dan SpO2) terkunci terlebih dahulu sebelum melakukan analisis.');
       return;
@@ -411,7 +415,6 @@ export default function App() {
     setIsAnalyzing(true);
     setAnalysis(null);
     try {
-      // Buat data dummy dengan nilai locked untuk analisis
       const lockedData: VitalData[] = [{
         timestamp: new Date().toLocaleTimeString('id-ID', { hour12: false }),
         bpm: lockedBpm!,
@@ -428,8 +431,8 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-100 p-4 md:p-8">
-      <header className="max-w-7xl mx-auto mb-8 flex flex-col md:flex-row justify-between items-center gap-4 border-b border-slate-800 pb-6">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 p-4 md:p-8 transition-colors duration-200">
+      <header className="max-w-7xl mx-auto mb-8 flex flex-col md:flex-row justify-between items-center gap-4 border-b border-slate-200 dark:border-slate-800 pb-6">
         <div className="flex items-center gap-3">
           <div className="bg-blue-600 p-2 rounded-lg">
             <Activity className="w-8 h-8 text-white" />
@@ -438,16 +441,25 @@ export default function App() {
             <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-teal-400 bg-clip-text text-transparent">
               VitalSense
             </h1>
-            <p className="text-slate-400 text-sm">Dashboard MAX30100 & ESP8266</p>
+            <p className="text-slate-600 dark:text-slate-400 text-sm">Dashboard MAX30100 & ESP8266</p>
           </div>
         </div>
 
         <div className="flex flex-wrap justify-center items-center gap-3">
-          <div className="bg-slate-800 p-1 rounded-lg border border-slate-700 flex mr-2">
+          {/* Theme Toggle Button */}
+          <button
+            onClick={toggleTheme}
+            className="p-2 rounded-lg bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors border border-slate-300 dark:border-slate-700"
+            title={isDark ? 'Light Mode' : 'Dark Mode'}
+          >
+            {isDark ? <Sun className="w-5 h-5 text-amber-500" /> : <Moon className="w-5 h-5 text-slate-700" />}
+          </button>
+
+          <div className="bg-slate-200 dark:bg-slate-800 p-1 rounded-lg border border-slate-300 dark:border-slate-700 flex">
             <button
               onClick={() => setView('dashboard')}
               className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
-                view === 'dashboard' ? 'bg-slate-700 text-white shadow' : 'text-slate-400 hover:text-slate-200'
+                view === 'dashboard' ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
               }`}
             >
               <LayoutDashboard size={16} /> Dashboard
@@ -455,7 +467,7 @@ export default function App() {
             <button
               onClick={() => setView('guide')}
               className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
-                view === 'guide' ? 'bg-slate-700 text-white shadow' : 'text-slate-400 hover:text-slate-200'
+                view === 'guide' ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
               }`}
             >
               <BookOpen size={16} /> Panduan
@@ -463,7 +475,7 @@ export default function App() {
             <button
               onClick={() => setView('recommendations')}
               className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
-                view === 'recommendations' ? 'bg-slate-700 text-white shadow' : 'text-slate-400 hover:text-slate-200'
+                view === 'recommendations' ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
               }`}
             >
               <Apple size={16} /> Rekomendasi
@@ -471,7 +483,7 @@ export default function App() {
             <button
               onClick={() => setView('products')}
               className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
-                view === 'products' ? 'bg-slate-700 text-white shadow' : 'text-slate-400 hover:text-slate-200'
+                view === 'products' ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
               }`}
             >
               <ShoppingCart size={16} /> Produk
@@ -516,12 +528,12 @@ export default function App() {
         {view === 'dashboard' ? (
           <div className="space-y-6">
             {!isRunning && status === ConnectionStatus.DISCONNECTED && (
-              <div className="bg-slate-800/50 border border-dashed border-slate-700 rounded-xl p-8 text-center">
-                <Settings className="w-12 h-12 text-slate-600 mx-auto mb-4" />
-                <h3 className="text-xl font-medium text-slate-300">Menunggu Koneksi Alat</h3>
-                <p className="text-slate-500 max-w-md mx-auto mt-2">
+              <div className="bg-white/90 dark:bg-slate-800/50 border border-dashed border-slate-300 dark:border-slate-700 rounded-xl p-8 text-center">
+                <Settings className="w-12 h-12 text-slate-400 dark:text-slate-600 mx-auto mb-4" />
+                <h3 className="text-xl font-medium text-slate-700 dark:text-slate-300">Menunggu Koneksi Alat</h3>
+                <p className="text-slate-500 dark:text-slate-500 max-w-md mx-auto mt-2">
                   Pastikan ESP8266 menyala, terhubung ke jaringan yang sama, dan endpoint{' '}
-                  <code className="mx-1 bg-slate-800 px-1 rounded">/data</code> sudah aktif.
+                  <code className="mx-1 bg-slate-200 dark:bg-slate-800 px-1 rounded">/data</code> sudah aktif.
                   Klik <b>Mulai dari ESP8266</b> untuk mulai mengambil data.
                 </p>
               </div>
@@ -552,21 +564,21 @@ export default function App() {
             </div>
 
             <div className="bg-gradient-to-br from-indigo-900/20 to-violet-900/20 rounded-2xl p-1 border border-indigo-500/30">
-              <div className="bg-slate-900/80 backdrop-blur-sm rounded-xl p-6">
+              <div className="bg-white/90 dark:bg-slate-900/80 backdrop-blur-sm rounded-xl p-6">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
                   <div className="flex items-center gap-3">
                     <div className="bg-indigo-500/20 p-2 rounded-lg border border-indigo-500/30">
                       <Brain className="w-6 h-6 text-indigo-400" />
                     </div>
                     <div>
-                      <h2 className="text-lg font-bold text-slate-100">Analisis Kesehatan AI</h2>
-                      <p className="text-slate-400 text-sm">Analisis Otomatis Data Vital</p>
+                      <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">Analisis Kesehatan AI</h2>
+                      <p className="text-slate-600 dark:text-slate-400 text-sm">Analisis Otomatis Data Vital</p>
                     </div>
                   </div>
                   <button
                     onClick={handleAnalyze}
                     disabled={isAnalyzing || !isBpmLocked || !isSpo2Locked}
-                    className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-700 disabled:text-slate-500 text-white rounded-lg text-sm font-medium transition-colors"
+                    className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-400 dark:disabled:bg-slate-700 disabled:text-slate-300 dark:disabled:text-slate-500 text-white rounded-lg text-sm font-medium transition-colors"
                   >
                     {isAnalyzing ? (
                       <>
@@ -603,13 +615,13 @@ export default function App() {
                         }`}>
                           Kondisi: {analysis.status}
                         </h3>
-                        <p className="text-slate-300 text-sm leading-relaxed">{analysis.message}</p>
-                        <div className="bg-slate-950/30 p-3 rounded-md mt-2">
-                          <p className="text-slate-400 text-xs font-semibold uppercase mb-1">Rekomendasi:</p>
-                          <p className="text-slate-300 text-sm">{analysis.recommendation}</p>
+                        <p className="text-slate-700 dark:text-slate-300 text-sm leading-relaxed">{analysis.message}</p>
+                        <div className="bg-slate-200/30 dark:bg-slate-950/30 p-3 rounded-md mt-2">
+                          <p className="text-slate-600 dark:text-slate-400 text-xs font-semibold uppercase mb-1">Rekomendasi:</p>
+                          <p className="text-slate-700 dark:text-slate-300 text-sm">{analysis.recommendation}</p>
                         </div>
-                        <div className="mt-3 pt-3 border-t border-slate-800">
-                          <p className="text-xs text-slate-500 flex items-center gap-1">
+                        <div className="mt-3 pt-3 border-t border-slate-300 dark:border-slate-800">
+                          <p className="text-xs text-slate-500 dark:text-slate-500 flex items-center gap-1">
                             <Lock className="w-3 h-3" />
                             Hasil analisis berdasarkan nilai terkunci: BPM {lockedBpm}, SpO2 {lockedSpo2}%
                           </p>
@@ -618,7 +630,7 @@ export default function App() {
                     </div>
                   </div>
                 ) : (
-                  <div className="text-center py-8 text-slate-500 border-2 border-dashed border-slate-800 rounded-lg">
+                  <div className="text-center py-8 text-slate-500 dark:text-slate-500 border-2 border-dashed border-slate-300 dark:border-slate-800 rounded-lg">
                     <Brain className="w-12 h-12 mx-auto mb-2 opacity-20" />
                     <p>
                       {(!isBpmLocked || !isSpo2Locked) ? (
