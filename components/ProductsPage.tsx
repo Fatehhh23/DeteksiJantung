@@ -15,12 +15,12 @@ const products: Product[] = [
     id: 1,
     name: 'Smart Ring',
     description: 'Cincin pintar untuk monitoring detak jantung dan SpO2 dengan sensor MAX30102',
-    price: 'Kontak Kami',
+    price: 'Rp 1.500.000',
     features: [
       'Monitoring BPM & SpO2',
-      'Sinkronisasi smartphone',
-      'Nyaman dipakai',
-      'Data real-time',
+      'Baterai tahan 5-7 hari',
+      'Waterproof',
+      'Sinkronisasi smartphone'
     ],
     image: '/images/ring.jpg'
   },
@@ -28,28 +28,25 @@ const products: Product[] = [
     id: 2,
     name: 'Smart Band',
     description: 'Gelang kesehatan dengan display OLED untuk tracking jantung harian',
-    price: 'Kontak Kami',
+    price: 'Rp 1.200.000',
     features: [
       'Sensor MAX30102',
       'Display OLED',
-      'Nyaman dipakai',
-      'Data real-time',
-      'Sinkronisasi smartphone',
+      'Tracking tidur & aktivitas',
+      'Baterai 5 hari'
     ],
     image: '/images/band.jpg'
   },
   {
     id: 3,
     name: 'Armband Sensor',
-    description: 'Armband pintar untuk monitoring detak jantung dan SpO2 dengan sensor MAX30102',
-    price: 'Kontak Kami',
+    description: 'Sensor armband untuk monitoring kesehatan dengan hasil akurat',
+    price: 'Rp 800.000',
     features: [
-      'Monitoring BPM & SpO2',
-      'Sinkronisasi smartphone',
+      'Sensor presisi tinggi',
       'Nyaman dipakai',
       'Data real-time',
-      'Nyaman dipakai',
-      
+      'Compatible smartphone'
     ],
     image: '/images/armband.jpg'
   }
@@ -57,9 +54,9 @@ const products: Product[] = [
 
 const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
   return (
-    <div className="bg-slate-800/50 border border-slate-700 rounded-2xl overflow-hidden hover:border-blue-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-blue-900/20 flex flex-col h-full">
+    <div className="bg-white dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden hover:border-blue-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-blue-900/20 flex flex-col h-full">
       {/* Product Image */}
-      <div className="relative h-64 bg-slate-900/50 overflow-hidden">
+      <div className="relative h-64 bg-slate-100 dark:bg-slate-900/50 overflow-hidden">
         <img 
           src={product.image} 
           alt={product.name}
@@ -72,13 +69,13 @@ const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
 
       {/* Product Info */}
       <div className="p-6 flex flex-col flex-grow">
-        <h3 className="text-xl font-bold text-slate-100 mb-3">{product.name}</h3>
-        <p className="text-sm text-slate-400 mb-4">{product.description}</p>
+        <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-3">{product.name}</h3>
+        <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">{product.description}</p>
 
         {/* Features */}
         <div className="mb-5 space-y-2">
           {product.features.map((feature, idx) => (
-            <div key={idx} className="flex items-start gap-2 text-xs text-slate-400">
+            <div key={idx} className="flex items-start gap-2 text-xs text-slate-600 dark:text-slate-400">
               <CheckCircle className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0 mt-0.5" />
               <span>{feature}</span>
             </div>
@@ -86,10 +83,10 @@ const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
         </div>
 
         {/* Price & CTA */}
-        <div className="mt-auto pt-4 border-t border-slate-700">
+        <div className="mt-auto pt-4 border-t border-slate-200 dark:border-slate-700">
           <div className="mb-3">
-            <p className="text-xs text-slate-500 mb-1">Harga</p>
-            <p className="text-2xl font-bold text-blue-400">{product.price}</p>
+            <p className="text-xs text-slate-500 dark:text-slate-500 mb-1">Harga</p>
+            <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">{product.price}</p>
           </div>
           <button className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors">
             <ShoppingCart className="w-4 h-4" />
@@ -110,9 +107,9 @@ const ProductsPage: React.FC = () => {
           <div className="bg-blue-600 p-2 rounded-lg">
             <ShoppingCart className="w-6 h-6 text-white" />
           </div>
-          <h2 className="text-2xl font-bold text-slate-100">Produk Monitoring Jantung Custom</h2>
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Produk Monitoring Jantung Custom</h2>
         </div>
-        <p className="text-slate-300 mb-4">
+        <p className="text-slate-700 dark:text-slate-300 mb-4">
           Pilih perangkat monitoring jantung sesuai kebutuhan Anda. Semua produk menggunakan sensor MAX30100/MAX30102 dengan akurasi tinggi.
         </p>
         <div className="flex flex-wrap gap-3">
@@ -139,16 +136,16 @@ const ProductsPage: React.FC = () => {
       </div>
 
       {/* Footer Info */}
-      <div className="bg-slate-800/50 border border-slate-700 rounded-2xl p-6">
-        <h3 className="text-lg font-semibold text-slate-200 mb-3">Mengapa Pilih Produk Kami?</h3>
+      <div className="bg-white dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl p-6">
+        <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-200 mb-3">Mengapa Pilih Produk Kami?</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="flex items-start gap-3">
             <div className="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
               <Shield className="w-5 h-5 text-blue-400" />
             </div>
             <div>
-              <p className="font-medium text-slate-200 mb-1">Bergaransi</p>
-              <p className="text-sm text-slate-400"></p>
+              <p className="font-medium text-slate-900 dark:text-slate-200 mb-1">Garansi 1 Tahun</p>
+              <p className="text-sm text-slate-600 dark:text-slate-400">Garansi resmi dan layanan purna jual</p>
             </div>
           </div>
           <div className="flex items-start gap-3">
@@ -156,8 +153,8 @@ const ProductsPage: React.FC = () => {
               <CheckCircle className="w-5 h-5 text-emerald-400" />
             </div>
             <div>
-              <p className="font-medium text-slate-200 mb-1">Akurat</p>
-              <p className="text-sm text-slate-400"></p>
+              <p className="font-medium text-slate-900 dark:text-slate-200 mb-1">Akurat</p>
+              <p className="text-sm text-slate-600 dark:text-slate-400">Sensor presisi tinggi MAX30102</p>
             </div>
           </div>
           <div className="flex items-start gap-3">
@@ -165,8 +162,8 @@ const ProductsPage: React.FC = () => {
               <Battery className="w-5 h-5 text-purple-400" />
             </div>
             <div>
-              <p className="font-medium text-slate-200 mb-1">Baterai Awet</p>
-              <p className="text-sm text-slate-400"></p>
+              <p className="font-medium text-slate-900 dark:text-slate-200 mb-1">Baterai Awet</p>
+              <p className="text-sm text-slate-600 dark:text-slate-400">Tahan hingga 7 hari pemakaian</p>
             </div>
           </div>
         </div>
