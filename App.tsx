@@ -27,8 +27,9 @@ interface AnalysisResult {
 
 const MAX_DATA_POINTS = 50;
 const ESP_BASE_URL = 'http://10.224.86.192';
-const STABILITY_WINDOW = 10;
-const STABILITY_THRESHOLD = 3;
+const STABILITY_WINDOW = 5; // Dikurangi dari 10 menjadi 5 untuk lebih cepat
+const STABILITY_THRESHOLD = 8; // Ditingkatkan dari 5 menjadi 8 untuk lebih toleran
+const NO_FINGER_THRESHOLD = 10; // Batas untuk deteksi jari tidak ada
 
 // ============= COMPONENTS =============
 const MetricCard: React.FC<{
@@ -96,7 +97,7 @@ const MetricCard: React.FC<{
 
         {isLocked && (
           <p className="mt-3 text-xs text-slate-500">
-            Nilai rata-rata stabil dari {STABILITY_WINDOW} pembacaan terakhir
+            Nilai rata-rata stabil dari {STABILITY_WINDOW} pembacaan (~{STABILITY_WINDOW} detik)
           </p>
         )}
       </div>
@@ -276,29 +277,56 @@ export default function App() {
     
     const recentData = data.slice(-STABILITY_WINDOW);
     
-    // Check BPM stability - hanya jika belum locked
+    // Deteksi jari tidak ada - jika BPM atau SpO2 terlalu rendah
+    const lastBpm = recentData[recentData.length - 1].bpm;
+    const lastSpo2 = recentData[recentData.length - 1].spo2;
+    
+    if (lastBpm < NO_FINGER_THRESHOLD || lastSpo2 < NO_FINGER_THRESHOLD) {
+      // Auto-unlock jika jari tidak terdeteksi
+      if (isBpmLocked || isSpo2Locked) {
+        setIsBpmLocked(false);
+        setIsSpo2Locked(false);
+        setLockedBpm(null);
+        setLockedSpo2(null);
+      }
+      return;
+    }
+    
+    // Check BPM stability - hanya jika belum locked DAN nilai valid
     if (!isBpmLocked) {
-      const bpmValues = recentData.map(d => d.bpm);
-      const avgBpm = Math.round(bpmValues.reduce((a, b) => a + b, 0) / bpmValues.length);
-      const maxBpm = Math.max(...bpmValues);
-      const minBpm = Math.min(...bpmValues);
+      const bpmValues = recentData.map(d => d.bpm).filter(v => v >= NO_FINGER_THRESHOLD);
       
-      if (maxBpm - minBpm <= STABILITY_THRESHOLD) {
-        setLockedBpm(avgBpm);
-        setIsBpmLocked(true);
+      if (bpmValues.length >= STABILITY_WINDOW) {
+        const avgBpm = Math.round(bpmValues.reduce((a, b) => a + b, 0) / bpmValues.length);
+        const maxBpm = Math.max(...bpmValues);
+        const minBpm = Math.min(...bpmValues);
+        const variance = maxBpm - minBpm;
+        
+        // Lock jika variasi dalam threshold DAN nilai masuk akal (30-200 BPM)
+        if (variance <= STABILITY_THRESHOLD && avgBpm >= 30 && avgBpm <= 200) {
+          setLockedBpm(avgBpm);
+          setIsBpmLocked(true);
+          console.log(`BPM Locked: ${avgBpm} (variance: ${variance})`);
+        }
       }
     }
     
-    // Check SpO2 stability - hanya jika belum locked
+    // Check SpO2 stability - hanya jika belum locked DAN nilai valid
     if (!isSpo2Locked) {
-      const spo2Values = recentData.map(d => d.spo2);
-      const avgSpo2 = Math.round(spo2Values.reduce((a, b) => a + b, 0) / spo2Values.length);
-      const maxSpo2 = Math.max(...spo2Values);
-      const minSpo2 = Math.min(...spo2Values);
+      const spo2Values = recentData.map(d => d.spo2).filter(v => v >= NO_FINGER_THRESHOLD);
       
-      if (maxSpo2 - minSpo2 <= STABILITY_THRESHOLD) {
-        setLockedSpo2(avgSpo2);
-        setIsSpo2Locked(true);
+      if (spo2Values.length >= STABILITY_WINDOW) {
+        const avgSpo2 = Math.round(spo2Values.reduce((a, b) => a + b, 0) / spo2Values.length);
+        const maxSpo2 = Math.max(...spo2Values);
+        const minSpo2 = Math.min(...spo2Values);
+        const variance = maxSpo2 - minSpo2;
+        
+        // Lock jika variasi dalam threshold DAN nilai masuk akal (70-100%)
+        if (variance <= STABILITY_THRESHOLD && avgSpo2 >= 70 && avgSpo2 <= 100) {
+          setLockedSpo2(avgSpo2);
+          setIsSpo2Locked(true);
+          console.log(`SpO2 Locked: ${avgSpo2}% (variance: ${variance})`);
+        }
       }
     }
   }, [isBpmLocked, isSpo2Locked]);
